@@ -31,6 +31,7 @@ there always exists a valid time obtained by substituting '?' with digits.
 
 """
 
+
 def latest_hour(time):
     hour = time.split(':')[0]
     minute = time.split(':')[1]
@@ -68,7 +69,7 @@ def replace_minute(minute):
 
 def test(time, expected):
     result = latest_hour(time)
-    if (expected == result):
+    if expected == result:
         print(f'SUCCESS! {result}')
     else:
         print(f'FAILED! Should be {expected} but was {result}')
