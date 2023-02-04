@@ -19,28 +19,44 @@ Brackets are only part of syntax of writing repeated substring.
 Input is always valid, so no need to check its validity.
 """
 
-def decompress(input, num=1):
-    print(f'input is {input}')
-    num = input.split('[')[0]
+
+def decompress(input):
+    # print(f'input is {input}')
     left_count = 0
     new_input_start = 0
     right_count = 0
     new_input_end = len(input)
+    num = 1
     for i in range(len(input)):
         if input[i] == '[':
             left_count = left_count + 1
             if left_count == 1:
                 new_input_start = i + 1
+                j = 1
+                num = 0
+                while input[i-j].isnumeric():
+                    num = num + int(input[i-j])*10**(j-1)
+                    j = j + 1
+
         if input[i] == ']':
             right_count = right_count + 1
         if left_count > 0 and left_count == right_count:
             new_input_end = i
+            break
+    num_len = len(str(num))
+    before_inner = input[:new_input_start-1-num_len] if new_input_start > 0 else ''
     inner = input[new_input_start:new_input_end]
-    print(f'Inner is: {inner}')
-    if new_input_end == len(input):
-        return int(num) * str(inner)
+    rest = input[new_input_end + 1:]
+    # print( ' ')
+    # print(f'Before inner is: {before_inner}')
+    # print(f'Inner is: {inner}')
+    # print(f'Rest is: {rest}')
+    # print(f'Num is: {num}')
+    # print(' ')
+    if right_count == 0:
+        return str(inner)
     else:
-        return decompress(inner, num)
+        return decompress(before_inner + int(num)*inner + rest)
 
 def test(input, expected):
     print('-----------------')
@@ -53,3 +69,4 @@ def test(input, expected):
 test('3[abc]', 'abcabcabc')
 test('3[abc]4[ab]c', 'abcabcabcababababc')
 test('10[a]', 'aaaaaaaaaa')
+test('2[3[a]b]', 'aaabaaab')
