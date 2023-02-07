@@ -20,11 +20,30 @@ Input is always valid, so no need to check its validity.
 """
 
 
+def decompress_v2(input):
+    num = ''
+    result = ''
+    stack = []
+    for char in input:
+        if char.isdigit():
+            num = num + char
+        elif char == '[':
+            stack.append(result)
+            stack.append(num)
+            result = ''
+            num = ''
+        elif char == ']':
+            times = stack.pop()
+            prev_result = stack.pop()
+            result = prev_result + int(times) * result
+        else:
+            result = result + char
+    return result
+
 def decompress(input):
-    # print(f'input is {input}')
     left_count = 0
-    new_input_start = 0
     right_count = 0
+    new_input_start = 0
     new_input_end = len(input)
     num = 1
     for i in range(len(input)):
@@ -47,26 +66,23 @@ def decompress(input):
     before_inner = input[:new_input_start-1-num_len] if new_input_start > 0 else ''
     inner = input[new_input_start:new_input_end]
     rest = input[new_input_end + 1:]
-    # print( ' ')
-    # print(f'Before inner is: {before_inner}')
-    # print(f'Inner is: {inner}')
-    # print(f'Rest is: {rest}')
-    # print(f'Num is: {num}')
-    # print(' ')
     if right_count == 0:
         return str(inner)
     else:
         return decompress(before_inner + int(num)*inner + rest)
 
-def test(input, expected):
-    print('-----------------')
-    result = decompress(input)
+
+def test(input, expected, func):
+    result = func(input)
     if expected == result:
         print(f'SUCCESS! Decompressed {input} is {result}')
     else:
         print(f'FAILED! Decompressed {input} should be {expected} but was {result}')
 
-test('3[abc]', 'abcabcabc')
-test('3[abc]4[ab]c', 'abcabcabcababababc')
-test('10[a]', 'aaaaaaaaaa')
-test('2[3[a]b]', 'aaabaaab')
+for func in [decompress, decompress_v2]:
+    test('3[abc]', 'abcabcabc', func)
+    test('3[abc]4[ab]c', 'abcabcabcababababc', func)
+    test('10[a]', 'aaaaaaaaaa', func)
+    test('2[3[a]b]', 'aaabaaab', func)
+    test('0[a]', '', func)
+    print(' ')
